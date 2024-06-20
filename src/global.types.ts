@@ -1,3 +1,3 @@
 export type getPing = {
-    message: string
-}
+  message: string;
+};
