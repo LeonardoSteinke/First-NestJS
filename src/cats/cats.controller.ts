@@ -1,16 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, HttpCode, Redirect } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Res,
+} from '@nestjs/common';
 import { CatsService } from './cats.service';
-import { CreateCatDto } from './dto/create-cat.dto';
-import { UpdateCatDto } from './dto/update-cat.dto';
 import { Response } from 'express';
+import { Cat } from './entities/cat.entity';
 
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) { }
 
   @Post()
-  create(@Body() createCatDto: CreateCatDto) {
-    this.catsService.create(createCatDto);
+  create(@Res() res: Response, @Body() cat: Cat) {
+    if (cat.name && cat.age && cat.breed) {
+      this.catsService.create(cat);
+      return res.status(200).json({ message: 'Gato Criado com Sucesso!' })
+    }
+    return res.status(400).json({ message: "Está faltando informações no Payload" })
   }
 
   @Get()
@@ -20,13 +31,17 @@ export class CatsController {
 
   @Get('/breed/:id')
   breedByPath(@Res() res: Response, @Param('id') id: string) {
-    return res.status(404).json({ message: "Não foi encontrado nenhuma raça de gato com ID = " + id })
+    return res.status(404).json({
+      message: 'Não foi encontrado nenhuma raça de gato com ID = ' + id,
+    });
   }
 
   @Get('/breed')
   breedByBody(@Body() body, @Res() res: Response) {
     const { id } = body;
-    return res.status(404).json({ message: "Não foi encontrado nenhuma raça de gato com ID = " + id })
+    return res.status(404).json({
+      message: 'Não foi encontrado nenhuma raça de gato com ID = ' + id,
+    });
   }
 
   @Get(':id')
@@ -36,12 +51,9 @@ export class CatsController {
 
   @Get('/:id/breed')
   findCatBreed(@Res() res: Response, @Param('id') id: string) {
-    return res.status(404).json({ message: "Não foi encontrado nenhum gato com ID = " + id })
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
-    return this.catsService.update(+id, updateCatDto);
+    return res
+      .status(404)
+      .json({ message: 'Não foi encontrado nenhum gato com ID = ' + id });
   }
 
   @Delete(':id')

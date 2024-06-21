@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateCatDto } from './dto/update-cat.dto';
 import { Cat } from './entities/cat.entity';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class CatsService {
+  private readonly cats: Cat[] = [];
+  constructor(private prismaService: PrismaService) { }
 
-  private readonly cats: Cat[] = []
-
-  create(cat: Cat) {
-    this.cats.push(cat)
+  async create(cat: Cat) {
+    await this.prismaService.cat.create({ data: cat })
     return { message: 'Added a new cat' };
   }
 
@@ -20,7 +20,7 @@ export class CatsService {
     return `This action returns a #${id} cat`;
   }
 
-  update(id: number, updateCatDto: UpdateCatDto) {
+  update(id: number) {
     return `This action updates a #${id} cat`;
   }
 

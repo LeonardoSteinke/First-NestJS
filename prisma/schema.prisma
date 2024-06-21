@@ -11,8 +11,9 @@ datasource db {
 }
 
 model Cat {
-  id    String @id
-  name  String
-  age   Int
-  breed String
+  id       Int      @id @default(autoincrement())
+  name     String?
+  age      Int
+  breed    String
+  bornedAt DateTime @default(now())
 }
