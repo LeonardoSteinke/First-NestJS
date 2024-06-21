@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, HttpCode, Redirect } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
 @Controller('cats')
 export class CatsController {
@@ -10,7 +10,7 @@ export class CatsController {
 
   @Post()
   create(@Body() createCatDto: CreateCatDto) {
-    return this.catsService.create(createCatDto);
+    this.catsService.create(createCatDto);
   }
 
   @Get()
@@ -20,18 +20,23 @@ export class CatsController {
 
   @Get('/breed/:id')
   breedByPath(@Res() res: Response, @Param('id') id: string) {
-    return res.status(404).json({ message: "Não foi encontrado nenhum gato com ID = " + id })
+    return res.status(404).json({ message: "Não foi encontrado nenhuma raça de gato com ID = " + id })
   }
 
   @Get('/breed')
-  breedByBody(@Req() req: Request, @Res() res: Response) {
-    const { id } = req.body;
-    return res.status(404).json({ message: "Não foi encontrado nenhum gato com ID = " + id })
+  breedByBody(@Body() body, @Res() res: Response) {
+    const { id } = body;
+    return res.status(404).json({ message: "Não foi encontrado nenhuma raça de gato com ID = " + id })
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.catsService.findOne(+id);
+  }
+
+  @Get('/:id/breed')
+  findCatBreed(@Res() res: Response, @Param('id') id: string) {
+    return res.status(404).json({ message: "Não foi encontrado nenhum gato com ID = " + id })
   }
 
   @Patch(':id')
